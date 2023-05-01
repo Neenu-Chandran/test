@@ -1,18 +1,27 @@
-name: Publish package to the Maven Central Repository
+name: Update Pom Version
+
 on:
   release:
     types: [created]
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 jobs:
-  publish:
+  update-pom-version:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v2
-      - name: Install Java and Maven
-        uses: actions/setup-java@v1
-        with:
-          java-version: 8
-      - if: github.event.release
-        name: Update version in pom.xml (Release only)
-        run: mvn -B versions:set -DnewVersion=${{ github.event.release.tag_name }} -DgenerateBackupPoms=false
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Update Pom Version
+      run: mvn versions:set -DnewVersion=${{ github.event.release.tag_name }}
+
+    - name: Commit changes
+      run: |
+        git config user.email "github-actions@github.com"
+        git config user.name "GitHub Actions"
+        git add pom.xml
+        git commit -m "Update pom.xml version to ${{ github.event.release.tag_name }}"
+        git push
+        
