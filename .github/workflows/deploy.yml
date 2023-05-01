@@ -23,5 +23,5 @@ jobs:
         git config user.name "GitHub Actions"
         git add pom.xml
         git commit -m "Update pom.xml version to ${{ github.event.release.tag_name }}"
-        git push
+        git push origin HEAD:main
         
